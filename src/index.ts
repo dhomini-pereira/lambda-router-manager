@@ -1,24 +1,9 @@
-import { APIGatewayProxyEvent } from "aws-lambda";
-import EventEmitter from "events";
-import { EventParser } from "./utils/event-parse.util";
-import { Router } from "./utils/router.util";
+import { app } from "./app";
+import { IRequest } from "./interfaces/request.interface";
+import { IResponse } from "./interfaces/response.interface";
 import { IRouter } from "./interfaces/router.interface";
+import { ControllerModel } from "./models/controller.model";
 
-export const app = async (event: APIGatewayProxyEvent, routes: IRouter[]) => {
-  const response = new EventEmitter();
-  const data = new EventParser(event).parse();
+export { app, ControllerModel };
 
-  const router = new Router(data, response);
-
-  router.addRoutes(routes);
-
-  const promise = new Promise((resolve, _) => {
-    response.on("response", (data) => {
-      resolve(data);
-    });
-  });
-
-  await router.run();
-
-  return promise;
-};
+export type { IRequest, IResponse, IRouter };
