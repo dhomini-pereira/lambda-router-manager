@@ -1,6 +1,5 @@
-import EventEmitter from "events";
 import { IRequest } from "../interfaces/request.interface";
-import { IResult } from "../interfaces/Result.interface";
+import { IResult } from "../interfaces/result.interface";
 import { MyEmitter } from "./my-emitter.util";
 
 type Response = {

@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { IResult } from "../interfaces/Result.interface";
+import { IResult } from "../interfaces/result.interface";
 
 interface MyEvents {
   response: (data: IResult) => void;

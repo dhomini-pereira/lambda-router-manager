@@ -36,14 +36,14 @@ Esta aplicação permite utilizar a mesma aplicação em diversas rotas do API G
    ```ts
    const routes = [
      {
-       path: "/rota1",
+       path: "/users",
        method: "GET",
-       controller: controller1,
+       controller: listUsersController,
      },
      {
-       path: "/rota2",
-       method: "POST",
-       controller: controller2,
+       path: "/user/{userId}",
+       method: "GET",
+       controller: getUserController,
      },
    ];
 
@@ -54,12 +54,33 @@ Esta aplicação permite utilizar a mesma aplicação em diversas rotas do API G
 
    ```ts
    // Exemplos de controllers
-   const controller1 = (request: IRequest, response: IResponse) => {
-     response.send("Resposta da rota1");
+   const users = [
+     {
+       id: 1,
+       name: "John",
+       age: 21,
+     },
+     {
+       id: 2,
+       name: "Jane",
+       age: 30,
+     },
+   ];
+
+   const listUsersController = (request: IRequest, response: IResponse) => {
+     response.send({
+       body: JSON.stringify(users),
+       statusCode: 200,
+     });
    };
 
-   const controller2 = (request: IRequest, response: IResponse) => {
-     response.send("Resposta da rota2");
+   const getUserController = (request: IRequest, response: IResponse) => {
+     const userId = request.params.userId;
+     const user = users.find((usr) => usr.id == userId);
+     response.send({
+       body: JSON.stringify(user),
+       statusCode: 200,
+     });
    };
    ```
 
