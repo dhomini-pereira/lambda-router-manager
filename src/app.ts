@@ -1,11 +1,11 @@
-import { APIGatewayProxyEvent } from "aws-lambda";
-import EventEmitter from "events";
 import { EventParser } from "./utils/event-parse.util";
 import { Router } from "./utils/router.util";
 import { IRouter } from "./interfaces/router.interface";
+import { IEvent } from "./interfaces/event.interface";
+import { MyEmitter } from "./utils/my-emitter.util";
 
-export const app = async (event: APIGatewayProxyEvent, routes: IRouter[]) => {
-  const response = new EventEmitter();
+export const app = async (event: IEvent, routes: IRouter[]) => {
+  const response = new MyEmitter();
   const data = new EventParser(event).parse();
 
   const router = new Router(data, response);

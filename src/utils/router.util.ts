@@ -1,9 +1,10 @@
 import EventEmitter from "events";
 import { IRequest } from "../interfaces/request.interface";
-import { APIGatewayProxyResult } from "aws-lambda";
+import { IResult } from "../interfaces/Result.interface";
+import { MyEmitter } from "./my-emitter.util";
 
 type Response = {
-  send: (data: APIGatewayProxyResult) => void;
+  send: (data: IResult) => void;
 };
 
 export class Router {
@@ -12,7 +13,7 @@ export class Router {
     path: string;
     handler: (request: IRequest, response: Response) => void | Promise<void>;
   }[] = [];
-  constructor(private request: IRequest, private response: EventEmitter) {}
+  constructor(private request: IRequest, private response: MyEmitter) {}
 
   addRoute(
     method: string,
@@ -27,15 +28,21 @@ export class Router {
   }
 
   async run() {
-    const route = this.routes.find(
-      (v) => v.method === this.request.method && v.path === this.request.path
-    );
+    const route = this.routes.find((v) => {
+      const routePattern = v.path.replace(/\{[^}]+\}/g, "([^/]+)");
+      const regex = new RegExp(`^${routePattern}$`);
+
+      return (
+        v.method.toUpperCase() === this.request.method.toUpperCase() &&
+        regex.test(this.request.path)
+      );
+    });
 
     if (!route) {
       return this.response.emit("response", {
         body: "Not Found",
         statusCode: 404,
-      } as APIGatewayProxyResult);
+      });
     }
 
     await route.handler(this.request, {
@@ -49,7 +56,7 @@ export class Router {
       method: string;
       handler: (
         request: IRequest,
-        response: { send: (data: APIGatewayProxyResult) => void }
+        response: { send: (data: IResult) => void }
       ) => void | Promise<void>;
     }[]
   ) {

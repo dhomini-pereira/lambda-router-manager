@@ -1,3 +1,5 @@
+import { IResult } from "./Result.interface";
+
 export interface IResponse {
-  send(data: any): void;
+  send(data: IResult): void;
 }
