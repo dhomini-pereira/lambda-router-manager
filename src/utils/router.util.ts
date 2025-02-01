@@ -44,6 +44,19 @@ export class Router {
       });
     }
 
+    const routePattern = route.path.replace(/\{([^}]+)\}/g, "([^/]+)");
+    const regex = new RegExp(`^${routePattern}$`);
+    const match = this.request.path.match(regex);
+
+    if (match) {
+      const keys = [...route.path.matchAll(/\{([^}]+)\}/g)].map((m) => m[1]);
+      const params = keys.reduce((acc, key, index) => {
+        acc[key] = match[index + 1];
+        return acc;
+      }, {} as Record<string, string>);
+      this.request.params = params;
+    }
+
     await route.handler(this.request, {
       send: (data) => this.response.emit("response", data),
     });
